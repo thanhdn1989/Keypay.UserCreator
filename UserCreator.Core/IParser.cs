@@ -1,12 +1,11 @@
 ﻿namespace UserCreator.Core
 {
-    /// <summary>
-    /// Abstract class to define basic contract for a parser
-    /// TODO: support advance parser
-    /// </summary>
     public interface IParser
     {
+        /// <summary>
+        /// Name of the field where the parsing method will be applied
+        /// </summary>
         string FieldName { get; }
-        string Parse(string fieldValue);
+        bool TryParse(string fieldValue, out object result);
     }
 }

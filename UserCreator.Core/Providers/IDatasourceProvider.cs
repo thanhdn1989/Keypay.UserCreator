@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using UserCreator.Core.Providers.Contracts;
+using UserCreator.Core.Contracts;
 
 namespace UserCreator.Core.Providers
 {

@@ -1,38 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using UserCreator.Core.Providers.Contracts;
+﻿using UserCreator.Core.Contracts;
 
 namespace UserCreator.Core
 {
-    public static class ParserService
+    public class ParserService
     {
-        private static Dictionary<string, Func<string, string>> _parsers = new Dictionary<string, Func<string, string>>();
+        private readonly ParserProvider _parserProvider;
 
-        public static void ParseFor(string fieldName, IParser parser)
+        public ParserService(ParserProvider parserProvider)
         {
-            _parsers.TryAdd(fieldName, parser.Parse);
+            _parserProvider = parserProvider;
         }
 
-        public static void ParseFor(string fieldName, Func<string, string> parser)
-        {
-            _parsers.TryAdd(fieldName, parser);
-        }
-
-        public static bool TryParse(Field field, out string data)
+        public bool TryParse(Field field, out string data)
         {
             data = field.Value;
-            try
+            var parser = _parserProvider.GetParser(field.FieldName);
+            if (parser == null) return true;
+            if (!parser.TryParse(field.Value, out var result))
             {
-                if (_parsers.ContainsKey(field.FieldName))
-                    data = _parsers[field.FieldName].Invoke(field.Value);
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e.GetBaseException().ToString());
-                Console.Out.WriteLine($"Could not convert {field.FieldName}!");
+                data = result.ToString();
                 return false;
             }
+            data = result.ToString();
+            return true;
+
         }
     }
 }

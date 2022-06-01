@@ -1,21 +1,24 @@
-# UserCreator
+BUG
+   
+As far as I can see, the Id duplication issue can be because:
+1. Threading issue
++ Root cause
 
-You have been called in to help with the program that data entry staff use to input data that is then uploaded into the database.
+    StreamWriter is not thread safe. Taking a look here: [streamwriter.cs
+  ](https://github.com/microsoft/referencesource/blob/master/mscorlib/system/io/streamwriter.cs), it use a global buffer char array, so when multiple thread trying to invoke WriteAsync method on the same StreamWriter instance, one thread's line can overwrite the previous thread hence cause duplicate row => duplicate Id
++ Solution:
 
-The program writes out CSV files, which are uploaded into a database table with the following columns:
-ID int not
-FieldName nvarchar(255)
-FieldData nvarchar(255)
+    Use a thread synchronization mechanism like: Mutex, Semaphore etc. In this case I will use SemaphoreSlim since it can be released on multi-thread
 
-User will typically enter a few fields at a time, and upload them. The program can run by “dotnet run [filename]” e.g. “dotnet run Users.txt”.
+2. User use the same file after they quit or application crash
++ Root cause
 
-The program has been recently enhanced to perform type checking for fields like date of birth and salary, as some staff were entering invalid values. This has been largely hailed as a success as it has prevented some staff from entering invalid values.
+    There is no mechanism for recovery yet, hence when user use the same file for their second run the ID will be generated from 1 again'
++ Solution
 
-However, the program needs some enhancement, and you have been called in to help.
+    Always check if file is exist, if exists then we will try to find the latest ID of each field and start from there
 
-Bug: some users have been reporting that they are getting database errors when uploading the files that they have created using the program - and that it is something to do with a primary key. You talk to the previous developer to ask whether this is a known issue, and he said: “oh yes, I found that some files had duplicate IDs in them. It uploads them to a staging table, you see, and it has got a primary key. I think it was probably a threading issue, so I put in an Interlocked.Increment to get the nextId instead of just a normal incremenet - so I think that should have sorted it!”. However, it doesn’t seem to have sorted it - you’ve checked some users have definitely encountered the issuse since upgrading to the latest version, so you need to investigate further. You can assume that the IDs don’t have to be unique across multiple files (because it uploads each one to its own ‘staging table’) but they do have to be unique within each file. Each file is created by a single invocation of the program. Users have said, though, that the program usually works fine - they have demonstrated using it to successfully create files with unique IDs - so you need to find out what conditions cause it to fail as well as coming up with a fix.
+ENHANCEMENT
 
-Refactoring: some of the other technical team have wondered if there is any refactoring that the program would benefit from, to improve the general quality of the code and the layout of the program as a whole. However it’s up to you to decide if anything along these lines is necessary and if so what. 
-Enhancement: some users have complained that sometimes, they run the program for quite a long time, and if their computer crashes, they lose the whole file. Can you do anything to improve this situation, so that if their computer crashes they don’t lose the whole file?
-
-Unit tests: some developers have said there is an upcoming project to ask for more advanced parsing, and they have wondered if some unit tests would be a good idea to protect existing functionality - and any bug fix you are able to come up with - from regressing - as well as to test any new functionality.
+   To prevent user's document lost when their computer crash, I mimic the behavior of MS Office that will perform an autosave action every 5 minute.
+   When user recover back to their session, we will try to find latest ID of each Field and then continue from there

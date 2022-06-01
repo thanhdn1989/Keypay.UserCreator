@@ -11,22 +11,18 @@ namespace UserCreator.Core
             serviceCollection.AddSingleton<IdentityManager>();
             serviceCollection.AddScoped<FileWriter>();
             serviceCollection.AddScoped<RecoveryService>();
-            RegisterParserRule();
-        }
-
-        public static void RegisterParserRule()
-        {
             var rules = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && typeof(IParser).IsAssignableFrom(t))
                 .ToList();
             if (rules.Count == 0) return;
-            foreach (var instance in rules.Select(rule => (IParser)Activator.CreateInstance(rule)).Where(instance => instance != null))
+            foreach (var rule in rules)
             {
-                ParserService.ParseFor(instance.FieldName, instance.Parse);
+                serviceCollection.AddScoped(rule);
             }
+            serviceCollection.AddScoped<ParserService>();
+            serviceCollection.AddScoped<ParserProvider>();
         }
-
     }
 }

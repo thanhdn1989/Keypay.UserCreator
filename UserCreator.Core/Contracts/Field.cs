@@ -1,4 +1,4 @@
-﻿namespace UserCreator.Core.Providers.Contracts
+﻿namespace UserCreator.Core.Contracts
 {
     public class Field
     {
@@ -8,7 +8,7 @@
             FieldName = fieldName;
         }
 
-        public string FieldName { get; private set; }
-        public string Value { get; private set; }
+        public string FieldName { get; }
+        public string Value { get; }
     }
 }

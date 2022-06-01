@@ -17,16 +17,16 @@ namespace UserCreator
 
         static async Task<int> Main(string[] args)
         {
-            if(args.Length != 1)
-            {
-                await Console.Out.WriteLineAsync($"Usage: UserCreator [outputfile]");
-                return 1;
-            }
+            // if(args.Length != 1)
+            // {
+            //     await Console.Out.WriteLineAsync($"Usage: UserCreator [outputfile]");
+            //     return 1;
+            // }
 
             RegisterServices();
             var recoveryService = _serviceProvider.GetService<RecoveryService>();
-            var path = args[0] != null ? args[0] : @"E:\Users.txt";
-            // var path = @"E:\Users.txt";
+            // var path = args[0] != null ? args[0] : @"E:\Users.txt";
+            var path = @"E:\Users.txt";
             recoveryService!.TryRecoverLastSession(path);
             await using var fs = File.Open(path, FileMode.Append);
             await using var sw = new StreamWriter(fs);
@@ -42,6 +42,7 @@ namespace UserCreator
             serviceCollection.RegisterInfrastructure();
             serviceCollection.RegisterParser();
             serviceCollection.RegisterCore();
+            // serviceCollection.RegisterParserRule();
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
     }

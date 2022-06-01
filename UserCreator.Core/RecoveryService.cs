@@ -59,6 +59,8 @@ namespace UserCreator.Core
             {
                 _identityManager.UpdateCurrentState(kvp.Key, kvp.Value);
             }
+            
+            Console.WriteLine($"Found existing file at {path}, Finish recover last session");
         }
     }
 }

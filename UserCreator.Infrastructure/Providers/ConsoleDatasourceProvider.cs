@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UserCreator.Core.Contracts;
 using UserCreator.Core.Providers;
-using UserCreator.Core.Providers.Contracts;
 
 namespace UserCreator.Infrastructure.Providers
 {

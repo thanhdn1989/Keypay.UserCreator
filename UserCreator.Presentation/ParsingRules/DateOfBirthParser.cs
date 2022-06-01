@@ -9,9 +9,20 @@ namespace UserCreator.ParsingRules
     {
         public string FieldName => FieldConstants.DateOfBirth;
 
-        public string Parse(string fieldValue)
+        public bool TryParse(string fieldValue, out object result)
         {
-            return DateTime.Parse(fieldValue).ToString(CultureInfo.InvariantCulture);
+            try
+            {
+                result = DateTime.Parse(fieldValue);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.GetBaseException().ToString());
+                Console.Out.WriteLine($"Could not convert {fieldValue} to {nameof(DateTime)}!");
+                result = default(DateTime);
+                return false;
+            }
         }
     }
 }
