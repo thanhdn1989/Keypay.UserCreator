@@ -6,10 +6,12 @@ namespace UserCreator.Core
 {
     public class ParserProvider
     {
-        private static readonly Dictionary<string, Type> Parsers = new Dictionary<string, Type>();
-        private readonly IServiceProvider _serviceProvider;
+        private static readonly Dictionary<string, Type> Parsers = 
+            new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly object Lock = new object();
 
+        private readonly IServiceProvider _serviceProvider;
+        
         public ParserProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;

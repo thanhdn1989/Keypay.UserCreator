@@ -16,6 +16,8 @@ namespace UserCreator.Core
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
         private IDisposable _backup;
         private StreamWriter _sw;
+        
+        private bool _disposedValue;
 
         public FileWriter(IDatasourceProvider datasourceProvider, IdentityManager identityManager, ParserService parserService)
         {
@@ -24,6 +26,8 @@ namespace UserCreator.Core
             _parserService = parserService;
             RegisterBackupObservable();
         }
+
+        ~FileWriter() => Dispose(false);
 
         public async Task WriteAsync(StreamWriter sw)
         {
@@ -73,7 +77,19 @@ namespace UserCreator.Core
 
         public void Dispose()
         {
-            CleanUp();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposedValue) return;
+            if (disposing)
+            {
+                CleanUp();
+            }
+
+            _disposedValue = true;
         }
     }
 }

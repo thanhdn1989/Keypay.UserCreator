@@ -1,5 +1,8 @@
 ﻿namespace UserCreator.Core
 {
+    /// <summary>
+    /// Parser contract
+    /// </summary>
     public interface IParser
     {
         /// <summary>
