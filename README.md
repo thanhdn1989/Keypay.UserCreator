@@ -9,12 +9,7 @@ As far as I can see, the Id duplication issue can be because:
 + Solution:
 
     Use a thread synchronization mechanism like: Mutex, Semaphore etc. In this case I will use SemaphoreSlim since it can be released on multi-thread
-
-  Update:
-
-  + Disallow Multi instance of application
-  + Make DoWriteAsync include (Generate Id, Generate csv row, write/flush to file) as an atomic operation => Ensure that there will be no threading issuse
-  + Trim input when generate csv line so that prevent the hacky case user try to input DateOfBirth_{space} hence it cause duplicate ID with exist one
+  
 
 2. User use the same file after they quit or application crash
 + Root cause
@@ -22,7 +17,14 @@ As far as I can see, the Id duplication issue can be because:
     There is no mechanism for recovery yet, hence when user use the same file for their second run the ID will be generated from 1 again'
 + Solution
 
-    Always check if file is exist, if exists then we will try to find the latest ID of each field and start from there
+    Always check if file is exist, if exists then we will try to find the latest ID of each field 
+    
+    and start from there
+
+Update:
+  + Disallow Multi instance of application
+  + Make DoWriteAsync include (Generate Id, Generate csv row, write/flush to file) as an atomic operation => Ensure that there will be no threading issuse
+  + New bugs Trim input when generate csv line so that prevent the hacky case user try to input DateOfBirth_{space} hence it cause duplicate ID with exist one
 
 ENHANCEMENT
 
