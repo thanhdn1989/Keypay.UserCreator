@@ -18,8 +18,10 @@ namespace UserCreator.Infrastructure.Providers
             string fieldType;
             while(!string.IsNullOrEmpty(fieldType = await GetFieldType()))
             {
-                yield return new Field(fieldType, await GetData(fieldType));
-                Console.WriteLine($"============");
+                var data = await GetData(fieldType);
+                if (string.IsNullOrEmpty(data)) continue;
+                yield return new Field(fieldType, data.Trim());
+                Console.WriteLine("============");
             }
         }
 

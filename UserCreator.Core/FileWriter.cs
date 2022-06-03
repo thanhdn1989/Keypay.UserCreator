@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using UserCreator.Core.Constants;
 using UserCreator.Core.Contracts;
 using UserCreator.Core.Providers;
 
@@ -46,9 +48,10 @@ namespace UserCreator.Core
             {
                 // Generate Id base on fieldType
                 await _semaphoreSlim.WaitAsync();
-                var id = _identityManager.GetNext(line.FieldName);
+                var id = _identityManager.GetNext(line.FieldName.Trim());
                 var row = $"{id},{line.FieldName},{data}";
                 await _sw.WriteLineAsync(row);
+                await _sw.FlushAsync();
                 _semaphoreSlim.Release();
             }
         }
