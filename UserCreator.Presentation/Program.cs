@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using UserCreator.Core;
@@ -10,9 +11,14 @@ namespace UserCreator
     class Program
     {
         private static IServiceProvider _serviceProvider;
-
+        static Mutex _mutex = new Mutex(true, "My App Name");
         static async Task<int> Main(string[] args)
         {
+            if (!_mutex.WaitOne(0, false))
+            {
+                Console.WriteLine("Instance already running");
+                return 0;
+            }
             if(args.Length != 1)
             {
                 await Console.Out.WriteLineAsync($"Usage: UserCreator [outputfile]");

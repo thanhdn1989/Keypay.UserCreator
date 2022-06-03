@@ -12,6 +12,7 @@ As far as I can see, the Id duplication issue can be because:
 
   Update:
 
+  + Disallow Multi instance of application
   + Make DoWriteAsync include (Generate Id, Generate csv row, write/flush to file) as an atomic operation => Ensure that there will be no threading issuse
   + Trim input when generate csv line so that prevent the hacky case user try to input DateOfBirth_{space} hence it cause duplicate ID with exist one
 

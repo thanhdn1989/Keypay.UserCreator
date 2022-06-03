@@ -20,7 +20,7 @@ namespace UserCreator.Infrastructure.Providers
             {
                 var data = await GetData(fieldType);
                 if (string.IsNullOrEmpty(data)) continue;
-                yield return new Field(fieldType, data.Trim());
+                yield return new Field(fieldType.Trim(), data.Trim());
                 Console.WriteLine("============");
             }
         }

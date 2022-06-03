@@ -30,7 +30,7 @@ namespace UserCreator.Core
                 var fields = line.Split(",");
                 if (fields.Length != 3)
                     throw new Exception("Invalid data");
-                var fieldName = fields[1];
+                var fieldName = fields[1].Trim();
                 var fieldValue = int.Parse(fields[0]);
                 if (fieldName.Equals(FieldConstants.DateOfBirth, StringComparison.InvariantCultureIgnoreCase)
                     || fieldName.Equals(FieldConstants.Salary, StringComparison.InvariantCultureIgnoreCase))
@@ -51,7 +51,7 @@ namespace UserCreator.Core
                         continue;
                     }
 
-                    fieldDict["fieldData"] = Math.Max(fieldDict[FieldConstants.DataField], fieldValue);
+                    fieldDict[FieldConstants.DataField] = Math.Max(fieldDict[FieldConstants.DataField], fieldValue);
                 }
             }
 
