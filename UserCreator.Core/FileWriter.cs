@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using UserCreator.Core.Constants;
 using UserCreator.Core.Contracts;
 using UserCreator.Core.Providers;
 
@@ -32,10 +34,34 @@ namespace UserCreator.Core
         public async Task WriteAsync(StreamWriter sw)
         {
             _sw = sw;
+            sw.AutoFlush = true;
             await foreach (var line in _datasourceProvider.ReadAsync())
             {
                 await DoWriteAsync(line);
             }
+        }
+
+        public async Task WriteAsyncss(StreamWriter sw)
+        {
+            _sw = sw;
+            var task = Enumerable
+                .Range(0, 1000)
+                .AsParallel()
+                .WithDegreeOfParallelism(32)
+                .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
+                .Select(async _ =>
+                {
+                    var field = new Field(FieldConstants.DateOfBirth, DateTime.Now.ToString());
+                    await DoWriteAsync(field);
+
+                    var field2 = new Field(FieldConstants.Salary, "10");
+                    await DoWriteAsync(field2);
+
+                    var field3 = new Field(FieldConstants.DataField, Guid.NewGuid().ToString());
+                    await DoWriteAsync(field3);
+                })
+                .ToList();
+            await Task.WhenAll(task);
         }
 
         private async Task DoWriteAsync(Field line)
@@ -44,9 +70,9 @@ namespace UserCreator.Core
             if (_parserService.TryParse(line, out var data))
             {
                 // Generate Id base on fieldType
+                await _semaphoreSlim.WaitAsync();
                 var id = _identityManager.GetNext(line.FieldName);
                 var row = $"{id},{line.FieldName},{data}";
-                await _semaphoreSlim.WaitAsync();
                 await _sw.WriteLineAsync(row);
                 _semaphoreSlim.Release();
             }
